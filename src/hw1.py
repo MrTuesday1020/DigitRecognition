@@ -18,17 +18,17 @@ import tensorflow as tf
 
 
 def add_consts():
-    """
-    EXAMPLE:
-    Construct a TensorFlow graph that declares 3 constants, 5.1, 1.0 and 5.9
-    and adds these together, returning the resulting tensor.
-    """
-    c1 = tf.constant(5.1)
-    c2 = tf.constant(1.0)
-    c3 = tf.constant(5.9)
-    a1 = tf.add(c1, c2)
-    af = tf.add(a1, c3)
-    return af
+	"""
+	EXAMPLE:
+	Construct a TensorFlow graph that declares 3 constants, 5.1, 1.0 and 5.9
+	and adds these together, returning the resulting tensor.
+	"""
+	c1 = tf.constant(5.1)
+	c2 = tf.constant(1.0)
+	c3 = tf.constant(5.9)
+	a1 = tf.add(c1, c2)
+	af = tf.add(a1, c3)
+	return af
 
 
 def add_consts_with_placeholder():
@@ -39,7 +39,11 @@ def add_consts_with_placeholder():
     following order:
     (the resulting tensor, the constructed placeholder).
     """
-
+    c1 = tf.constant(5.1)
+    c2 = tf.constant(1.0)
+    c3 = tf.placeholder(tf.float32)
+    a1 = tf.add(c1, c2)
+    af = tf.add(a1, c3)
     return af, c3
 
 
@@ -48,7 +52,7 @@ def my_relu(in_value):
     Implement a ReLU activation function that takes a scalar tf.placeholder as input
     and returns the appropriate output. For more information see the assignment spec.
     """
-
+    out_value = tf.nn.relu(in_value)
     return out_value
 
 
@@ -74,7 +78,11 @@ def my_perceptron(x):
         # tests here
 
     """
-
+    i = tf.placeholder(tf.float32,shape=[x])
+    w = tf.get_variable(name="weights", shape=[x], initializer=tf.ones_initializer())
+    m = tf.multiply(i, w)
+    s = tf.reduce_sum(m)
+    out = my_relu(s)
     return i, out
 
 
@@ -189,3 +197,4 @@ def train_step(sess, batch, X, Y, train_op, loss_op, summaries_op):
     train_result, loss, summary = \
         sess.run([train_op, loss_op, summaries_op], feed_dict={X: batch[0], Y: batch[1]})
     return train_result, loss, summary
+
