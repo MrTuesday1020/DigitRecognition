@@ -119,7 +119,13 @@ def onelayer(X, Y, layersize=10):
         batch_xentropy: The cross-entropy loss for each image in the batch
         batch_loss: The average cross-entropy loss of the batch
     """
-
+    in_size = X.get_shape().as_list()[1]
+    w = tf.Variable(tf.random_normal([in_size, layersize]))
+    b = tf.Variable(tf.zeros([1, out_size]) + 0.1)
+    logits = tf.matmul(X, w) + biases
+    preds = tf.nn.softmax(logits)
+    batch_xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=preds)
+    batch_loss = tf.reduce_mean(batch_xentropy)
     return w, b, logits, preds, batch_xentropy, batch_loss
 
 
