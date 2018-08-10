@@ -119,10 +119,10 @@ def onelayer(X, Y, layersize=10):
         batch_xentropy: The cross-entropy loss for each image in the batch
         batch_loss: The average cross-entropy loss of the batch
     """
-    in_size = X.get_shape().as_list()[1]
-    w = tf.Variable(tf.random_normal([in_size, layersize]))
-    b = tf.Variable(tf.zeros([1, out_size]) + 0.1)
-    logits = tf.matmul(X, w) + biases
+    inputsize = X.get_shape().as_list()[1]
+    w = tf.Variable(tf.random_normal([inputsize, layersize]))
+    b = tf.Variable(tf.zeros([1, layersize]) + 0.1)
+    logits = tf.matmul(X, w) + b
     preds = tf.nn.softmax(logits)
     batch_xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=preds)
     batch_loss = tf.reduce_mean(batch_xentropy)
@@ -146,7 +146,19 @@ def twolayer(X, Y, hiddensize=30, outputsize=10):
         batch_xentropy: The cross-entropy loss for each image in the batch
         batch_loss: The average cross-entropy loss of the batch
     """
+    inputsize = X.get_shape().as_list()[1]
+    w1 = tf.Variable(tf.random_normal([inputsize, hiddensize]))
+    b1 = tf.Variable(tf.zeros([1, hiddensize]) + 0.1)
+    logits1 = tf.matmul(X, w1) + b1
+    preds1 = tf.nn.relu(logits1)
 
+    w2 = tf.Variable(tf.random_normal([hiddensize,outputsize]))
+    b2 = tf.Variable(tf.random_normal([1,outputsize]) + 0.1)
+    logits = tf.matmul(preds1,w2) + b2
+    preds = tf.nn.softmax(logits)
+
+    batch_xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=preds)
+    batch_loss = tf.reduce_mean(batch_xentropy)
     return w1, b1, w2, b2, logits, preds, batch_xentropy, batch_loss
 
 
@@ -176,6 +188,23 @@ def convnet(X, Y, convlayer_sizes=[10, 10], \
     will be from the conv2 layer. If you reshape the conv2 output using tf.reshape,
     you should be able to call onelayer() to get the final layer of your network
     """
+
+    conv1 = tf.layers.conv2d( inputs = X, filters = convlayer_sizes[0], kernel_size=filter_shape, padding="same", activation = tf.nn.relu)
+    conv2 = tf.layers.conv2d( inputs = conv1, filters = convlayer_sizes[1], kernel_size=filter_shape, padding="same", activation = tf.nn.relu)
+
+    height = conv2.get_shape().as_list()[1]
+    width = conv2.get_shape().as_list()[2]
+    inputsize = width * height * convlayer_sizes[1]
+    
+    inputdata = tf.reshape(conv2, [-1, inputsize])
+
+    w = tf.Variable(tf.random_normal([inputsize, outputsize]))
+    b = tf.Variable(tf.zeros([1, outputsize]) + 0.1)
+
+    logits = tf.matmul(inputdata, w) + b
+    preds = tf.nn.softmax(logits)
+    batch_xentropy=tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y)
+    batch_loss=tf.reduce_mean(batch_xentropy)
 
     return conv1, conv2, w, b, logits, preds, batch_xentropy, batch_loss
 
