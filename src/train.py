@@ -13,7 +13,7 @@ qfns_path = os.path.realpath(os.path.join(base_path, sid))
 
 sys.path.append(qfns_path)
 print("added {0} to path, now importing student_hw1.py".format(qfns_path))
-import example_solution as qfns
+import hw1 as qfns
 
 network = sys.argv[2]
 
