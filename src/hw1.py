@@ -120,7 +120,7 @@ def onelayer(X, Y, layersize=10):
         batch_loss: The average cross-entropy loss of the batch
     """
     inputsize = X.get_shape().as_list()[1]
-    w = tf.Variable(tf.random_normal([inputsize, layersize]))
+    w = tf.Variable(tf.truncated_normal([inputsize, layersize], mean=0.0, stddev=0.1))
     b = tf.Variable(tf.zeros([1, layersize]) + 0.1)
     logits = tf.matmul(X, w) + b
     preds = tf.nn.softmax(logits)
@@ -147,12 +147,12 @@ def twolayer(X, Y, hiddensize=30, outputsize=10):
         batch_loss: The average cross-entropy loss of the batch
     """
     inputsize = X.get_shape().as_list()[1]
-    w1 = tf.Variable(tf.random_normal([inputsize, hiddensize]))
+    w1 = tf.Variable(tf.truncated_normal([inputsize, hiddensize], mean=0.0, stddev=0.1))
     b1 = tf.Variable(tf.zeros([1, hiddensize]) + 0.1)
     logits1 = tf.matmul(X, w1) + b1
     preds1 = tf.nn.relu(logits1)
 
-    w2 = tf.Variable(tf.random_normal([hiddensize,outputsize]))
+    w2 = tf.Variable(tf.truncated_normal([hiddensize, outputsize], mean=0.0, stddev=0.1))
     b2 = tf.Variable(tf.random_normal([1,outputsize]) + 0.1)
     logits = tf.matmul(preds1,w2) + b2
     preds = tf.nn.softmax(logits)
@@ -198,7 +198,8 @@ def convnet(X, Y, convlayer_sizes=[10, 10], \
     
     inputdata = tf.reshape(conv2, [-1, inputsize])
 
-    w = tf.Variable(tf.random_normal([inputsize, outputsize]))
+
+    w = tf.Variable(tf.truncated_normal([inputsize, outputsize], mean=0.0, stddev=0.1))
     b = tf.Variable(tf.zeros([1, outputsize]) + 0.1)
 
     logits = tf.matmul(inputdata, w) + b
